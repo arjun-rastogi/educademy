@@ -3,6 +3,7 @@ import Joi from "joi-browser";
 import { SigninFormData } from "./types";
 import Form from "../../common/form";
 import auth from "../../services/authServices";
+import { loginRoute } from "../../utils/apiRoute";
 
 type Props = {};
 interface Errors {
@@ -18,7 +19,7 @@ function SigninForm({}: Props) {
     // Call the server
     console.log("Submitted", data);
     try {
-      await auth.login(data.email, data.password);
+      await auth.login(loginRoute, data);
       window.location.href = "/admin";
     } catch (ex: any) {
       const newErrors = { ...errors };

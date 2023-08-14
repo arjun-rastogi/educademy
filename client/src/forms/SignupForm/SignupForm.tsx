@@ -4,6 +4,7 @@ import { SignupFormData } from "./types";
 import Form from "../../common/form";
 import auth from "../../services/authServices";
 import * as userService from "../../services/userService";
+import { registerRoute } from "../../utils/apiRoute";
 
 type Props = {};
 
@@ -20,9 +21,9 @@ function SignupForm({}: Props) {
     // Call the server
     console.log("Submitted", data);
     try {
-      const response = await userService.register(data);
+      const response = await userService.register(registerRoute, data);
       auth.loginWithJwt(response.data.token);
-      window.location.href = "/dashboard";
+      window.location.href = "/admin";
     } catch (ex: any) {
       if (ex.response && ex.response.status === 400) {
         const newErrors = { ...errors };
