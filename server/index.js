@@ -1,16 +1,29 @@
 const express = require("express");
 const cors = require("cors");
-
-const connection = require("./connection");
-const authRoute = require("./routes/userRoutes");
-
+const mongoose = require("mongoose");
+const userRoutes = require("./routes/userRoutes");
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+require("dotenv").config();
+
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Routing for our product file.
-app.use("/api", authRoute);
+app.use("/api/auth", userRoutes);
 
-module.exports = app;
+mongoose
+  .connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("DB Connetion Successfull");
+  })
+  .catch((err) => {
+    console.log(err.message);
+  });
+
+const server = app.listen(process.env.PORT, () => {
+  console.log(`Server started on port ${process.env.PORT}`);
+});
