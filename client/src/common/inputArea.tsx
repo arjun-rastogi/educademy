@@ -39,6 +39,7 @@ function InputArea({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
+        rows={4}
         {...rest}
       />
       {error && <p className="text-danger">{error}</p>}

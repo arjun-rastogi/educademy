@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Joi from "joi-browser";
 import Select from "./select";
 import Input from "./input";
@@ -11,7 +11,7 @@ interface Schema {
 }
 
 interface Option {
-  id: number;
+  id: string;
   name: string;
 }
 
@@ -23,6 +23,10 @@ interface Props<T> {
   schema: Schema;
   base64Image?: string;
   setBase64Image?: React.Dispatch<React.SetStateAction<string>>;
+  selectedOptions?: { id: string; name: string }[];
+  setSelectedOptions?: React.Dispatch<
+    React.SetStateAction<{ id: string; name: string }[]>
+  >;
   onSubmit: () => void;
 }
 
@@ -42,10 +46,10 @@ const Form = <T extends FormData>({
   schema,
   base64Image,
   setBase64Image,
+  selectedOptions,
+  setSelectedOptions,
   onSubmit,
 }: Props<T>) => {
-  const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
-
   const renderFile = (
     name: string,
     label: string,
@@ -56,6 +60,7 @@ const Form = <T extends FormData>({
         type={type}
         name={name}
         value=""
+        src={data[name]}
         label={label}
         onChange={handleImageChange}
         error={errors[name]}
@@ -66,7 +71,8 @@ const Form = <T extends FormData>({
   const renderInput = (
     name: string,
     label: string,
-    type = "text"
+    type = "text",
+    placeholder = ""
   ): JSX.Element => {
     return (
       <Input
@@ -74,6 +80,7 @@ const Form = <T extends FormData>({
         name={name}
         value={data[name]}
         label={label}
+        placeholder={placeholder}
         onChange={handleChange}
         error={errors[name]}
       />
@@ -103,16 +110,18 @@ const Form = <T extends FormData>({
     options: Array<any>
   ): JSX.Element => {
     return (
-      <MultipleSelect
-        selectedOptions={selectedOptions}
-        setSelectedOptions={setSelectedOptions}
-        name={name}
-        value={data[name]}
-        label={label}
-        options={options}
-        error={errors[name]}
-        onChange={handleMultipleSelectChange}
-      />
+      <>
+        <MultipleSelect
+          selectedOptions={selectedOptions}
+          setSelectedOptions={setSelectedOptions}
+          name={name}
+          value={data[name]}
+          label={label}
+          options={options}
+          error={errors[name]}
+          onChange={handleMultipleSelectChange}
+        />
+      </>
     );
   };
 
@@ -241,10 +250,14 @@ const Form = <T extends FormData>({
 
       reader.onload = () => {
         const base64String = reader.result as string;
-        setBase64Image(base64String);
+
+        let spilitFile = base64String.split(",");
+        let resultedString = spilitFile[1] as string;
+
+        setBase64Image(resultedString);
         setData((prevAccount) => ({
           ...prevAccount,
-          [(e.target as HTMLInputElement).name]: base64String, // Set the img value to the Base64 string
+          [(e.target as HTMLInputElement).name]: resultedString, // Set the img value to the Base64 string
         }));
       };
 

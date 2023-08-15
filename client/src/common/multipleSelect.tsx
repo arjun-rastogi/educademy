@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Multiselect from "multiselect-react-dropdown";
 
 interface Option {
-  id: number;
+  id: string;
   name: string;
 }
 
@@ -11,9 +11,12 @@ type Props = {
   label: string;
   options: { id: string; name: string }[];
   error?: string;
-  value: string;
-  selectedOptions: Option[]; // Update the type to string[]
-  setSelectedOptions: React.Dispatch<React.SetStateAction<Option[]>>;
+  value: { id: string; name: string }[];
+  selectedOptions?: { id: string; name: string }[];
+  setSelectedOptions?: React.Dispatch<
+    React.SetStateAction<{ id: string; name: string }[]>
+  >;
+
   onChange: (name: string, selectedOptions: Option[]) => void; // Update the onChange prop type
 };
 
@@ -32,17 +35,11 @@ function MultipleSelect({
     selectedList: Option[],
     selectedItem: Option | undefined
   ) => {
-    setSelectedOptions(selectedList);
-  };
-
-  useEffect(() => {
-    if (selectedOptions) {
-      const handleChange = () => {
-        onChange(name, selectedOptions);
-      };
-      handleChange();
+    if (setSelectedOptions) {
+      setSelectedOptions(selectedList);
+      onChange(name, selectedList);
     }
-  }, [name, selectedOptions]);
+  };
 
   return (
     <>
@@ -55,7 +52,7 @@ function MultipleSelect({
 
         <Multiselect
           options={options}
-          selectedValues={selectedOptions}
+          selectedValues={value}
           onSelect={handleSelect}
           onRemove={handleSelect}
           displayValue="name"
